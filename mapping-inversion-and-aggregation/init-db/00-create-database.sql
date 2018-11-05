@@ -1,0 +1,2 @@
+FLUSH PRIVILEGES ;
+CREATE DATABASE legacy_sales;

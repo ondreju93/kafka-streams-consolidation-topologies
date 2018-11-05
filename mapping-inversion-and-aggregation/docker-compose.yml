@@ -1,0 +1,47 @@
+version: '2'
+services:
+  zookeeper:
+    image: debezium/zookeeper:0.8
+    ports:
+    - 2181:2181
+    - 2888:2888
+    - 3888:3888
+  kafka:
+    image: debezium/kafka:0.8
+    ports:
+    - 9092:9092
+    links:
+    - zookeeper
+    environment:
+    - ZOOKEEPER_CONNECT=zookeeper:2181
+  mysql:
+    image: debezium/example-mysql:0.8
+    ports:
+    - 3306:3306
+    volumes:
+    - "./init-db:/docker-entrypoint-initdb.d"
+    environment:
+    - MYSQL_ROOT_PASSWORD=password
+    - MYSQL_USER=admin
+    - MYSQL_PASSWORD=password
+    - MYSQL_ROOT_HOST=%
+  connect:
+    image: debezium/connect:0.8
+    ports:
+    - 8083:8083
+    links:
+    - kafka
+    - mysql
+    environment:
+    - BOOTSTRAP_SERVERS=kafka:9092
+    - GROUP_ID=1
+    - CONFIG_STORAGE_TOPIC=my_connect_configs
+    - OFFSET_STORAGE_TOPIC=my_connect_offsets
+  kafdrop:
+    image: philippbauer/kafdrop
+    environment:
+    - ZOOKEEPER_CONNECT=zookeeper:2181
+    ports:
+    - "9001:9000"
+    depends_on:
+    - zookeeper
