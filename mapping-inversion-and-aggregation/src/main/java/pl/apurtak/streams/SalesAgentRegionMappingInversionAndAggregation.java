@@ -30,6 +30,11 @@ import org.slf4j.LoggerFactory;
 import pl.apurtak.streams.SalesRegion.KeyPayload;
 
 public class SalesAgentRegionMappingInversionAndAggregation {
+
+  public static final String LEGACY_REGIONS_STORE = "LegacyRegions";
+  public static final String SALES_REGION_TOPIC = "dbserver1.legacy_sales.SALES_REGION";
+  public static final String AGENTS_REGIONS_STORE = "AgentsRegions";
+  public static final String LEGACY_AGENTS_TOPIC = "LegacyAgents";
   private static final Logger log =
       LoggerFactory.getLogger(SalesAgentRegionMappingInversionAndAggregation.class);
 
@@ -39,6 +44,7 @@ public class SalesAgentRegionMappingInversionAndAggregation {
     props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
     props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass());
     props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass());
+    props.put(StreamsConfig.PROCESSING_GUARANTEE_CONFIG, StreamsConfig.EXACTLY_ONCE);
 
     final Topology topology = createTopology();
     final KafkaStreams streams = new KafkaStreams(topology, props);
@@ -70,33 +76,37 @@ public class SalesAgentRegionMappingInversionAndAggregation {
 
     KTable<ChangeKey<KeyPayload>, Change<SalesRegion>> legacyRegions =
         builder.table(
-            "dbserver1.legacy_sales.SALES_REGION",
+            SALES_REGION_TOPIC,
             SalesRegion.consumedWithKey(),
-            SalesRegion.materializedAs("LegacyRegions"));
+            SalesRegion.materializedAs(LEGACY_REGIONS_STORE));
 
-    //
-    //    legacyRegions.toStream()
-    //        .peek((key, value) -> log.info("Processing record: [key={}, value={}]", key, value));
+    KTable<String, SalesRegionChangesGrouped> agentsRegions =
+        legacyRegions
+            .groupBy(
+                (key, value) -> new KeyValue<>(hashingService.hash(getAgentEmail(value)), value),
+                SalesRegion.serializedWithStringKey())
+            .aggregate(
+                SalesRegionChangesGrouped::new,
+                SalesRegionChangesGrouped.adder,
+                SalesRegionChangesGrouped.subtractor,
+                SalesRegionChangesGrouped.materializedAs(AGENTS_REGIONS_STORE));
 
-    KTable<String, SalesRegionChangesGrouped> agentsRegions = legacyRegions
-        .groupBy(
-            (key, value) ->
-                new KeyValue<>(hashingService.hash(getAgentEmail(value)), value),
-            SalesRegion.serializedWithStringKey())
-        .aggregate(
-            SalesRegionChangesGrouped::new,
-            SalesRegionChangesGrouped.adder,
-            SalesRegionChangesGrouped.subtractor,
-            SalesRegionChangesGrouped.materializedAs("AgentsRegions"));
+    builder.addStateStore(LegacySalesAgentEventTransformer.stateStoreBuilder);
 
-    agentsRegions.toStream()
-        .mapValues(new SalesAgentEventMapper())
-        .to("LegacyAgents", SalesAgentEvent.produced);
+    agentsRegions
+        .toStream()
+        .transform(
+            LegacySalesAgentEventTransformer::new,
+            LegacySalesAgentEventTransformer.LEGACY_SALES_AGENTS_STORE)
+        .to(LEGACY_AGENTS_TOPIC, LegacySalesAgentEvent.produced);
 
     return builder.build();
   }
 
   private static String getAgentEmail(Change<SalesRegion> value) {
-    return value.getPayload().getAfter().getAgentEmailAddress();
+    Payload<SalesRegion> payload = value.getPayload();
+    return Operation.DELETE == payload.getOp()
+        ? payload.getBefore().getAgentEmailAddress()
+        : payload.getAfter().getAgentEmailAddress();
   }
 }

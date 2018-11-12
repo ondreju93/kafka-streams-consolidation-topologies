@@ -11,10 +11,13 @@ CREATE TABLE IF NOT EXISTS SALES_REGION (
 
 USE legacy_sales;
 INSERT INTO SALES_REGION(REGION_ID, REGION_NAME, PARENT_REGION_ID, REGION_HIERARCHY_LEVEL, AGENT_LAST_NAME, AGENT_FIRST_NAME, AGENT_EMAIL_ADDRESS) VALUES
-  (1, 'Trondheim', 11, 2, 'John', 'Berge', 'jberge@superinsurance.eu'),
-  (2, 'Oslo', 11, 2, 'John Arne', 'Berge', 'jberge@superinsurance.eu'),
-  (11, 'Norway', -1, 1, 'John Arne', 'Berge', 'jberge@superinsurance.eu'),
-  (3, 'Munich', 22, 2, 'Martin', 'Heideger', 'mheideger@superinsurance.eu'),
-  (4, 'Harburg', 22, 2, 'Joseph', 'Mueller', 'jmueller@superinsurance.eu'),
-  (5, 'Berlin', 22, 2, 'Joseph', 'Mueller', 'jmueller@superinsurance.eu'),
-  (22, 'Germany', -1, 1, 'Franz', 'Neuer', 'fneuer@superinsurance.eu');
+  (1, 'Trondheim', 11, 2, 'Bergman', 'John', 'jbergman@supersales.eu'),
+  (2, 'Oslo', 11, 2, 'Bergman', 'John A', 'jbergman@supersales.eu'),
+  (11, 'Norway', -1, 1, 'Bergman', 'John A', 'jbergman@supersales.eu'),
+  (3, 'Munich', 22, 2, 'Heideger', 'Martin', 'mheideger@supersales.eu'),
+  (4, 'Harburg', 22, 2, 'Mueller', 'Joseph', 'jmueller@supersales.eu'),
+  (5, 'Berlin', 22, 2, 'Mueller', 'Joseph', 'jmueller@supersales.eu'),
+  (22, 'Germany', -1, 1, 'Neuer', 'Franz', 'fneuer@supersales.eu'),
+  (6, 'Warszawa', 33, 2, 'Przybysz', 'Karol', 'kprzybysz@supersales.eu'),
+  (7, 'Poznan', 33, 2, 'Nowak', 'Jan', 'jnowak@supersales.eu'),
+  (33, 'Poland', -1, 1, 'Nowak', 'Jan', 'jnowak@supersales.eu');

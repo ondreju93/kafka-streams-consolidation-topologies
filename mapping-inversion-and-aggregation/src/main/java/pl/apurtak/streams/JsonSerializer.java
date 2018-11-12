@@ -1,5 +1,6 @@
 package pl.apurtak.streams;
 
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
 import org.apache.kafka.common.errors.SerializationException;
@@ -20,6 +21,7 @@ public class JsonSerializer<T> implements Serializer<T> {
       return new byte[0];
     } else {
       try {
+        objectMapper.setSerializationInclusion(Include.NON_NULL);
         return objectMapper.writeValueAsBytes(data);
       } catch (Exception e) {
         throw new SerializationException("Error serializing JSON message", e);

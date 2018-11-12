@@ -1,8 +1,0 @@
-/home/apurtak/Projects/kafka-streams-consolidation-topologies/mapping-inversion-and-aggregation/src/main/java/pl/apurtak/streams/SalesRegion.java
-/home/apurtak/Projects/kafka-streams-consolidation-topologies/mapping-inversion-and-aggregation/src/main/java/pl/apurtak/streams/SalesAgentRegionMappingInversionAndAggregation.java
-/home/apurtak/Projects/kafka-streams-consolidation-topologies/mapping-inversion-and-aggregation/src/main/java/pl/apurtak/streams/Operation.java
-/home/apurtak/Projects/kafka-streams-consolidation-topologies/mapping-inversion-and-aggregation/src/main/java/pl/apurtak/streams/ChangeKey.java
-/home/apurtak/Projects/kafka-streams-consolidation-topologies/mapping-inversion-and-aggregation/src/main/java/pl/apurtak/streams/Payload.java
-/home/apurtak/Projects/kafka-streams-consolidation-topologies/mapping-inversion-and-aggregation/src/main/java/pl/apurtak/streams/JsonSerializer.java
-/home/apurtak/Projects/kafka-streams-consolidation-topologies/mapping-inversion-and-aggregation/src/main/java/pl/apurtak/streams/Change.java
-/home/apurtak/Projects/kafka-streams-consolidation-topologies/mapping-inversion-and-aggregation/src/main/java/pl/apurtak/streams/JsonTypeDeserializer.java

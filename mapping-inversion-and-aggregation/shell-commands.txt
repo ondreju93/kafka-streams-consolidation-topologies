@@ -1,7 +1,0 @@
-- export PATH=/opt/confluent-5.0.0-beta180702222458/bin:$PATH
-
-export DEBEZIUM_VERSION=0.8
-docker-compose -f docker-compose-debezium-mysql.yaml up -d
-
-# Start Postgres connector
-curl -i -X POST -H "Accept:application/json" -H  "Content-Type:application/json" http://localhost:8083/connectors/ -d @debezium-legacy-mysql-db-config.json

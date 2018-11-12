@@ -1,15 +1,14 @@
 package pl.apurtak.streams;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.stream.Stream;
-import org.slf4j.Logger;
 
 public enum Operation {
-  CREATE("CREATE"),
-  UPDATE("UPDATE"),
-  DELETE("DELETE");
+  CREATE("c"),
+  UPDATE("u"),
+  DELETE("d");
 
-  private static final Logger log = org.slf4j.LoggerFactory.getLogger(Operation.class);
   private final String value;
 
   Operation(String value) {
@@ -22,5 +21,10 @@ public enum Operation {
         .filter(operation -> value.equalsIgnoreCase(operation.value))
         .findAny()
         .orElseThrow(IllegalArgumentException::new);
+  }
+
+  @JsonValue
+  public String getValue() {
+    return value;
   }
 }
