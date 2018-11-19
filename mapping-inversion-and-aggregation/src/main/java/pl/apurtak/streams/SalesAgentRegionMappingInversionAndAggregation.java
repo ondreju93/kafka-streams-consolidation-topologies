@@ -25,8 +25,6 @@ import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.KTable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import pl.apurtak.streams.SalesRegion.KeyPayload;
 
 public class SalesAgentRegionMappingInversionAndAggregation {
@@ -35,8 +33,6 @@ public class SalesAgentRegionMappingInversionAndAggregation {
   public static final String SALES_REGION_TOPIC = "dbserver1.legacy_sales.SALES_REGION";
   public static final String AGENTS_REGIONS_STORE = "AgentsRegions";
   public static final String LEGACY_AGENTS_TOPIC = "LegacyAgents";
-  private static final Logger log =
-      LoggerFactory.getLogger(SalesAgentRegionMappingInversionAndAggregation.class);
 
   public static void main(String[] args) {
     Properties props = new Properties();

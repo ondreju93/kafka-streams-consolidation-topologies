@@ -9,8 +9,6 @@ import org.apache.kafka.streams.processor.ProcessorContext;
 import org.apache.kafka.streams.state.KeyValueStore;
 import org.apache.kafka.streams.state.StoreBuilder;
 import org.apache.kafka.streams.state.Stores;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class LegacySalesAgentEventTransformer
     implements Transformer<
@@ -21,7 +19,6 @@ public class LegacySalesAgentEventTransformer
           Stores.persistentKeyValueStore(LEGACY_SALES_AGENTS_STORE),
           Serdes.String(),
           LegacySalesAgent.jsonSerde());
-  private static final Logger log = LoggerFactory.getLogger(LegacySalesAgentEventTransformer.class);
   private KeyValueStore<String, LegacySalesAgent> legacySalesAgentsStore = null;
 
   @Override
@@ -33,32 +30,23 @@ public class LegacySalesAgentEventTransformer
   @Override
   public KeyValue<String, LegacySalesAgentEvent> transform(
       String agentId, SalesRegionChangesGrouped groupedRegionChanges) {
-    log.info(
-        "Transforming grouped region changes into an LegacySalesAgent event: [agentId={}, regionChanges={}]",
-        agentId,
-        groupedRegionChanges);
-
     if (newAgentShouldBeCreated(agentId, groupedRegionChanges)) {
-      log.info("Sending LegacySalesAgentCreated event: [agentId={}]", agentId);
       LegacySalesAgent salesAgent = legacySalesAgent(agentId, groupedRegionChanges);
       legacySalesAgentsStore.put(agentId, salesAgent);
       return new KeyValue<>(
           agentId, new LegacySalesAgentEvent("LegacySalesAgentCreated", salesAgent));
     } else if (existingAgentShouldBeUpdated(agentId, groupedRegionChanges)) {
-      log.info("Sending LegacySalesAgentUpdated event: [agentId={}]", agentId);
       LegacySalesAgent salesAgent = legacySalesAgent(agentId, groupedRegionChanges);
       legacySalesAgentsStore.put(agentId, salesAgent);
       return new KeyValue<>(
           agentId, new LegacySalesAgentEvent("LegacySalesAgentUpdated", salesAgent));
     } else if (existingAgentShouldBeDeleted(agentId, groupedRegionChanges)) {
-      log.info("Sending LegacySalesAgentDeleted event: [agentId={}]", agentId);
       legacySalesAgentsStore.delete(agentId);
       return new KeyValue<>(
           agentId,
           new LegacySalesAgentEvent(
               "LegacySalesAgentDeleted", LegacySalesAgent.builder().id(agentId).build()));
     } else {
-      log.info("No need to send LegacySalesAgent event: [agentId={}]", agentId);
       return null;
     }
   }
